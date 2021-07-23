@@ -1,3 +1,5 @@
+require('./seeker/node_modules/@synopsys-sig/seeker')
+
 const child_process = require('child_process');
 const AWS = require('aws-sdk');
 const uuid = require('node-uuid');
