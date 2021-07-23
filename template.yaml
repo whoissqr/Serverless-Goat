@@ -34,9 +34,9 @@ Resources:
             Fn::GetAtt:
             - Bucket
             - WebsiteURL
-	  SEEKER_SERVER_URL: https://poc21.seeker.synopsys.com:443
-	  SEEKER_PROJECT_KEY: lambda-test
-	  SEEKER_AGENT_NAME: lambda-test
+          SEEKER_SERVER_URL: https://poc21.seeker.synopsys.com:443
+          SEEKER_PROJECT_KEY: lambda-test
+          SEEKER_AGENT_NAME: lambda-test
       Events:
         ApiConvert:
           Type: Api
