@@ -1,18 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-
 Globals:
   Function:
     Runtime: nodejs12.x
     Handler: index.handler
     MemorySize: 3008
     Timeout: 10
-
 Resources:
   FunctionFrontend:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/frontend/
+      CodeUri: s3://shichao-dctlabs/4d62be0cc4a8b2976e9d9ba0fff8c75e
       ReservedConcurrentExecutions: 5
       Events:
         ApiConvert:
@@ -23,14 +21,22 @@ Resources:
   FunctionConvert:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/api/convert/
+      CodeUri: s3://shichao-dctlabs/329215792d8663ac9dcc7c56c29a9943
       ReservedConcurrentExecutions: 5
       Environment:
         Variables:
           HOME: /var/task
-          TABLE_NAME: !Ref Table
-          BUCKET_NAME: !Ref Bucket
-          BUCKET_URL: !GetAtt Bucket.WebsiteURL
+          TABLE_NAME:
+            Ref: Table
+          BUCKET_NAME:
+            Ref: Bucket
+          BUCKET_URL:
+            Fn::GetAtt:
+            - Bucket
+            - WebsiteURL
+	  SEEKER_SERVER_URL: https://poc21.seeker.synopsys.com:443
+	  SEEKER_PROJECT_KEY: lambda-test
+	  SEEKER_AGENT_NAME: lambda-test
       Events:
         ApiConvert:
           Type: Api
@@ -38,20 +44,23 @@ Resources:
             Path: /api/convert
             Method: get
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref Table
-        - S3FullAccessPolicy:
-            BucketName: !Ref Bucket
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: Table
+      - S3FullAccessPolicy:
+          BucketName:
+            Ref: Bucket
   Table:
-     Type: AWS::Serverless::SimpleTable
+    Type: AWS::Serverless::SimpleTable
   Bucket:
-      Type: AWS::S3::Bucket
-      Properties:
-        AccessControl: PublicRead
-        WebsiteConfiguration:
-          IndexDocument: index.html
-          ErrorDocument: index.html
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
 Outputs:
-    WebsiteURL:
-      Description: 'Website URL'
-      Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${ServerlessRestApi.Stage}/'
+  WebsiteURL:
+    Description: Website URL
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${ServerlessRestApi.Stage}/
